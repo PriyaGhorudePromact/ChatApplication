@@ -10,5 +10,7 @@ namespace ChatAppBackend.Model
         }
 
         public DbSet<User> User { get; set; }
+
+        public DbSet<Messages> Messages { get; set; }
     }
 }
