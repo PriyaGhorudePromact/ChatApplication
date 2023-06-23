@@ -24,9 +24,9 @@ namespace ChatAppBackend.Controllers
 
         [HttpGet]
         [Route("GetUser")]
-        public User GetUser(int id)
+        public Messages GetUser(string id)
         {
-            return _myDbContext.User.Where(x => x.Id == id).FirstOrDefault();
+            return _myDbContext.Messages.Where(x => x.Id == id).FirstOrDefault();
         }
     }
 }

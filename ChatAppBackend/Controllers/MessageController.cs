@@ -28,7 +28,7 @@ namespace ChatAppBackend.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult SendMessage([FromBody]Messages message)
+        public IActionResult SendMessage(Messages message)
         {
             if (!ModelState.IsValid)
             {
@@ -36,40 +36,34 @@ namespace ChatAppBackend.Controllers
             }
             try
             {
-                var message1 = new Messages()
+                var data = _myDbContext.Messages.Where(x => x.senderId == message.Id).FirstOrDefault();
+
+                if(data != null)
                 {
-                    senderId = message.senderId,
-                    receiverId = message.receiverId,
-                    content = message.content,
-                    timestamp = message.timestamp
-                };
+                    var msg = _mapper.Map<Messages>(message);
+                    _myDbContext.Messages.Add(msg);
+                    _myDbContext.SaveChanges();
 
-                var msg = _mapper.Map<Messages>(message);
-                _myDbContext.Messages.Add(msg);
-                _myDbContext.SaveChanges();
-                var msg1 = _mapper.Map<Messages>(msg);
-
-                return Ok("Message Send By " + message.senderId);
+                    return Ok("Message Send By " + message.senderId);
+                }             
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { error = "Message sending fail by " + message.senderId + ex.Message });
             }
+            return Ok();
         }
 
         [Authorize]
         [HttpPut]
         [Route("EditMessage/{id}")]
-        public IActionResult EditMessage(string id, [FromBody]Messages message)
+        public IActionResult EditMessage(string id, Messages message)
         {
-            var msg = _myDbContext.Messages.Where(x => x.Id == id).FirstOrDefault();
-           // var msg =  _myDbContext.Messages.FindAsync(id);
-
-            //add  if id consist in Db or not???
+            var msg = _myDbContext.Messages.Where(x => x.senderId == id).FirstOrDefault();
      
             if(msg != null && msg.content != message.content)
             {
-                msg.senderId = message.senderId;
+                msg.senderId = message.Id;
                 msg.receiverId = message.receiverId;
                 msg.content  = message.content;
                 msg.timestamp = message.timestamp;
@@ -77,8 +71,6 @@ namespace ChatAppBackend.Controllers
 
                 _myDbContext.Update(msg);
                 _myDbContext.SaveChanges();
-
-
 
                 return Ok("Message Updated Successfully By " + message.senderId);
             }
@@ -90,23 +82,24 @@ namespace ChatAppBackend.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("DeleteMessage/{id}")]
         public IActionResult DeleteMessage(string id)
         {
-            var msg = _myDbContext.Messages.Where(x => x.Id == id).FirstOrDefault();
+            var msg = _myDbContext.Messages.Where(x => x.senderId == id).FirstOrDefault();
 
-            if(msg != null)
+            if(msg !=null)
             {
                 _myDbContext.Messages.Remove(msg);
                 _myDbContext.SaveChanges();
-                return Ok("Messatge Deleted");
+                return Ok("Message Deleted By " + id);
             }
             else
             {
-                return Ok("Fail to delete");
-            }
-           
+                return StatusCode(401, new { error = "You are not allowed to delete the message. "});
+            }    
+            return Ok();
         }
 
     }

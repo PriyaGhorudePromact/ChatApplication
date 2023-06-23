@@ -12,8 +12,6 @@ namespace ChatAppBackend.Controllers
     public class RegistrationController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly MyDbContext userContext;
-
         private readonly MyDbContext _myDbContext;
         private readonly IMapper _mapper;
         public RegistrationController(MyDbContext myDbContext, IMapper mapper)
