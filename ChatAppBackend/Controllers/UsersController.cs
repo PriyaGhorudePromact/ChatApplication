@@ -8,35 +8,25 @@ namespace ChatAppBackend.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly MyDbContext userContext;
+        private readonly MyDbContext _myDbContext;
 
-        public UsersController(MyDbContext userContext)
+        public UsersController(MyDbContext _myDbContext)
         {
-            this.userContext = userContext;   
+            this._myDbContext = _myDbContext;   
         }
 
         [HttpGet]
         [Route("GetUsers")]
         public List<User> GetUsers()
         {
-            return userContext.User.ToList();
+            return _myDbContext.User.ToList();
         }
 
         [HttpGet]
         [Route("GetUser")]
         public User GetUser(int id)
         {
-            return userContext.User.Where(x => x.Id == id).FirstOrDefault();
+            return _myDbContext.User.Where(x => x.Id == id).FirstOrDefault();
         }
-
-        //[HttpPost]
-        //[Route("AddUser")]
-        //public string AddUser(User users)
-        //{
-        //    string response = string.Empty;
-        //    userContext.User.Add(users);
-        //    userContext.SaveChanges();
-        //    return "User added";
-        //}
     }
 }

@@ -14,6 +14,9 @@ namespace ChatAppBackend.Helper
 
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
+
+            CreateMap<Messages, ResponseMessage>();
+            CreateMap<ResponseMessage, Messages>();
         }
     }
 }
