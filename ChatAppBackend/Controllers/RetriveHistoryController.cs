@@ -1,4 +1,5 @@
 ﻿using ChatAppBackend.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,23 +15,30 @@ namespace ChatAppBackend.Controllers
             _myDbContext = myDbContext;
         }
 
-        public Messages AuthenticateUser(string id)
-        {
-            var User = _myDbContext.Messages.Where(x => x.Id == id).FirstOrDefault();
-            return User;
-        }
 
-        [HttpGet("id")]
-        public IActionResult GetRetriveHistory(string id)
+        [Authorize]
+        [HttpGet("{id}")]
+        public List<Messages> GetRetriveHistory(string userId, DateTime before, int count, string sort)
         {
-            var history = AuthenticateUser(id);
-          // var data = _myDbContext.Messages.Where(x => x.Id == id).ToList();
-          if(history != null)
-            {
-                return (IActionResult)_myDbContext.Messages.Where(x => x.Id == id).FirstOrDefault();
-            }
-   
-            return Ok("Hi");
+            var msg = _myDbContext.Messages.Where(x => x.senderId == userId).ToList();
+
+            List<Messages> data = new List<Messages>();
+
+            //RetriveData retriveData = new RetriveData();
+            //if (msg != null)
+            //{
+            //    foreach (var item in msg)
+            //    {
+            //        RetriveData list = new RetriveData();
+            //        list.userId = item.senderId;
+            //        list.before = item.timestamp;
+            //        list.count = item.content.Length;
+
+            //        data.Add(list);
+            //    }
+            //}
+
+            return msg;
         }
     }
 }

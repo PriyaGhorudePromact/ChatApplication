@@ -38,14 +38,30 @@ namespace ChatAppBackend.Controllers
             {
                 var data = _myDbContext.Messages.Where(x => x.senderId == message.Id).FirstOrDefault();
 
-                if(data != null)
+                if(data == null)
                 {
                     var msg = _mapper.Map<Messages>(message);
                     _myDbContext.Messages.Add(msg);
                     _myDbContext.SaveChanges();
 
                     return Ok("Message Send By " + message.senderId);
-                }             
+                }
+                else
+                {
+                    if (data.content != message.content)
+                    {
+                        data.senderId = message.Id;
+                        data.receiverId = message.receiverId;
+                        data.content = message.content;
+                        data.timestamp = message.timestamp;
+                        data.senderId = message.senderId;
+
+                        _myDbContext.Update(data);
+                        _myDbContext.SaveChanges();
+
+                        return Ok("Message Updated Successfully By " + message.senderId);
+                    }
+                }
             }
             catch (Exception ex)
             {

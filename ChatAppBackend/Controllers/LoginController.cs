@@ -47,6 +47,7 @@ namespace ChatAppBackend.Controllers
                 expires: DateTime.Now.AddMinutes(1),
                 signingCredentials: credentials
                 );
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
