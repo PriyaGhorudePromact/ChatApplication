@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ChatAppBackend.Controllers
 {
@@ -17,28 +18,26 @@ namespace ChatAppBackend.Controllers
 
 
         [Authorize]
-        [HttpGet("{id}")]
-        public List<Messages> GetRetriveHistory(string userId, DateTime before, int count, string sort)
+        [HttpGet]
+        public IActionResult GetRetriveHistory(string userId, DateTime? before, int count = 20, string sort = "asc")
         {
-            var msg = _myDbContext.Messages.Where(x => x.senderId == userId).ToList();
+            var MessageHistory = _myDbContext.Messages.Where(x => x.senderId == userId).ToList();
 
-            List<Messages> data = new List<Messages>();
+            if(MessageHistory != null)
+            {
+                var user = _myDbContext.Messages.Where(x => x.senderId == userId || x.receiverId == userId).FirstOrDefault();
+                before = before != null ? before : DateTime.Now;
+                if(sort == "desc")
+                {
+                    var sortedData = MessageHistory.OrderByDescending(s => s.timestamp).ToList();
+                }
+            }
+            else
+            {
+                return Ok("User or conversation not found");
+            }
 
-            //RetriveData retriveData = new RetriveData();
-            //if (msg != null)
-            //{
-            //    foreach (var item in msg)
-            //    {
-            //        RetriveData list = new RetriveData();
-            //        list.userId = item.senderId;
-            //        list.before = item.timestamp;
-            //        list.count = item.content.Length;
-
-            //        data.Add(list);
-            //    }
-            //}
-
-            return msg;
+            return Ok(MessageHistory);
         }
     }
 }
