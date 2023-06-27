@@ -46,22 +46,22 @@ namespace ChatAppBackend.Controllers
 
                     return Ok("Message Send By " + message.senderId);
                 }
-                else
-                {
-                    if (data.content != message.content)
-                    {
-                        data.senderId = message.Id;
-                        data.receiverId = message.receiverId;
-                        data.content = message.content;
-                        data.timestamp = message.timestamp;
-                        data.senderId = message.senderId;
+                //else
+                //{
+                //    if (data.content != message.content)
+                //    {
+                //        //data.senderId = message.Id;
+                //        data.receiverId = message.receiverId;
+                //        data.content = message.content;
+                //        data.timestamp = message.timestamp;
+                //        data.senderId = message.senderId;
 
-                        _myDbContext.Update(data);
-                        _myDbContext.SaveChanges();
+                //        _myDbContext.Update(data);
+                //        _myDbContext.SaveChanges();
 
-                        return Ok("Message Updated Successfully By " + message.senderId);
-                    }
-                }
+                //        return Ok("Message Updated Successfully By " + message.senderId);
+                //    }
+                //}
             }
             catch (Exception ex)
             {
@@ -72,14 +72,14 @@ namespace ChatAppBackend.Controllers
 
         [Authorize]
         [HttpPut]
-        [Route("EditMessage/{id}")]
+        [Route("EditMessage")]
         public IActionResult EditMessage(string id, Messages message)
         {
             var msg = _myDbContext.Messages.Where(x => x.senderId == id).FirstOrDefault();
      
             if(msg != null && msg.content != message.content)
             {
-                msg.senderId = message.Id;
+               // msg.senderId = message.Id;
                 msg.receiverId = message.receiverId;
                 msg.content  = message.content;
                 msg.timestamp = message.timestamp;

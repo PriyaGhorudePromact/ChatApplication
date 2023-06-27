@@ -18,19 +18,31 @@ namespace ChatAppBackend.Controllers
 
 
         [Authorize]
-        [HttpGet]
-        public IActionResult GetRetriveHistory(string userId, DateTime? before, int count, string sort = "asc")
+        [HttpGet("{Userid}")]
+        public IActionResult GetRetriveHistory(string userId, DateTime before, int count, string sort = "asc")
         {
             var MessageHistory = _myDbContext.Messages.Where(x => x.senderId == userId).ToList();
+            List<Messages> ResultMessageHistory = new List<Messages>();
 
-            if (count > 20)
+            int maxCount = 20;
+            if (count > maxCount)
             {
                 return Ok("Max user can fetch 20 messages from conversatiuon history.");
             }
             if (MessageHistory != null)
             {
                 var user = _myDbContext.Messages.Where(x => x.senderId == userId || x.receiverId == userId).FirstOrDefault();
+               
                 before = before != null ? before : DateTime.Now;
+                foreach (var message in MessageHistory)
+                {
+                    bool isBeforeCurrentTimestamp = message.timestamp < before;
+                    if (isBeforeCurrentTimestamp)
+                    {
+                        ResultMessageHistory.Add(message);
+                    }
+                }
+                
                 if (sort == "desc")
                 {
                     var sortedData = MessageHistory.OrderByDescending(s => s.timestamp).ToList();
@@ -40,7 +52,7 @@ namespace ChatAppBackend.Controllers
             {
                 return Ok("User or conversation not found");
             }
-            var result = MessageHistory.OrderBy(i => i.timestamp).Take(count);
+            var result = ResultMessageHistory.OrderBy(i => i.timestamp).Take(count);
             return Ok(result);
         }
     }
